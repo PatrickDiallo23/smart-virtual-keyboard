@@ -1,0 +1,709 @@
+/* Virtual Keyboard Styles */
+
+.vk-keyboard {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  will-change: transform;
+  cursor: grab;
+}
+
+.vk-keyboard.vk-small {
+  width: 600px;
+  transform: scale(0.85);
+  transform-origin: bottom right;
+}
+
+.vk-keyboard.vk-small .vk-key {
+  min-width: 45px;
+  height: 45px;
+  font-size: 15px;
+}
+
+.vk-keyboard.vk-medium {
+  width: 800px;
+}
+
+.vk-keyboard.vk-large {
+  width: 1000px;
+}
+
+.vk-keyboard.vk-large .vk-key {
+  min-width: 60px;
+  height: 55px;
+  font-size: 17px;
+}
+
+.vk-keyboard.vk-large .vk-key-space {
+  min-width: 400px;
+}
+
+.vk-keyboard.vk-full {
+  width: 100vw;
+  left: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  border-radius: 0;
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+}
+
+.vk-keyboard.vk-full .vk-header {
+  flex-shrink: 0;
+}
+
+.vk-keyboard.vk-full .vk-suggestions {
+  flex-shrink: 0;
+}
+
+.vk-keyboard.vk-full .vk-input-display {
+  flex-shrink: 0;
+}
+
+.vk-keyboard.vk-full .vk-keys {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.vk-keyboard.vk-full .vk-footer {
+  flex-shrink: 0;
+}
+
+.vk-keyboard.vk-minimized .vk-input-display,
+.vk-keyboard.vk-minimized .vk-suggestions,
+.vk-keyboard.vk-minimized .vk-keys,
+.vk-keyboard.vk-minimized .vk-footer {
+  display: none;
+}
+
+/* Theme Variations */
+
+.vk-keyboard.vk-theme-dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.vk-keyboard.vk-theme-dark .vk-header {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.vk-keyboard.vk-theme-dark .vk-input-display {
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.vk-keyboard.vk-theme-dark .vk-key {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.vk-keyboard.vk-theme-dark .vk-key:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.vk-keyboard.vk-theme-dark .vk-key:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.vk-keyboard.vk-theme-dark .vk-footer {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.vk-keyboard.vk-theme-nature {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.vk-keyboard.vk-theme-nature .vk-header {
+  background: rgba(255, 255, 255, 0.15);
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.vk-keyboard.vk-theme-nature .vk-input-display {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.vk-keyboard.vk-theme-nature .vk-key {
+  background: rgba(255, 255, 255, 0.95);
+  color: #11998e;
+  border-color: rgba(17, 153, 142, 0.2);
+}
+
+.vk-keyboard.vk-theme-nature .vk-key:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+
+.vk-keyboard.vk-theme-nature .vk-key-enter {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.vk-keyboard.vk-theme-nature .vk-footer {
+  background: rgba(0, 0, 0, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.vk-keyboard.vk-theme-sunset {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.vk-keyboard.vk-theme-sunset .vk-header {
+  background: rgba(255, 255, 255, 0.15);
+  border-bottom-color: rgba(255, 255, 255, 0.25);
+}
+
+.vk-keyboard.vk-theme-sunset .vk-input-display {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.vk-keyboard.vk-theme-sunset .vk-key {
+  background: rgba(255, 255, 255, 0.95);
+  color: #fa709a;
+  border-color: rgba(250, 112, 154, 0.2);
+}
+
+.vk-keyboard.vk-theme-sunset .vk-key:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+
+.vk-keyboard.vk-theme-sunset .vk-key-enter {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  color: white;
+}
+
+.vk-keyboard.vk-theme-sunset .vk-footer {
+  background: rgba(0, 0, 0, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Header */
+
+.vk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: inherit;
+  user-select: none;
+}
+
+.vk-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.vk-layout-indicator {
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+.vk-icon {
+  font-size: 18px;
+}
+
+.vk-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.vk-btn-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.vk-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.vk-btn-icon:active {
+  transform: translateY(0);
+}
+
+.vk-btn-icon.active {
+  background: #e6f0ff;
+  border-color: #4a90e2;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.6);
+}
+
+/* AI Panel */
+
+.vk-ai-panel {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.vk-ai-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.vk-ai-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.vk-ai-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.vk-ai-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.vk-ai-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #ccc;
+}
+
+.vk-ai-result {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+}
+
+.vk-ai-result-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vk-ai-result-text {
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.vk-ai-apply {
+  width: 100%;
+  padding: 10px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.vk-ai-apply:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.vk-ai-apply:active {
+  transform: translateY(0);
+}
+
+.vk-ai-suggestion {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.vk-ai-suggestion:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateX(4px);
+}
+
+.vk-ai-error {
+  padding: 12px;
+  background: #fee;
+  color: #c33;
+  border-radius: 6px;
+  font-size: 14px;
+  border-left: 4px solid #c33;
+}
+
+.vk-ai-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  color: #667eea;
+  font-weight: 500;
+}
+
+.vk-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(102, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: vk-spin 0.8s linear infinite;
+}
+
+@keyframes vk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark theme adjustments */
+
+.vk-theme-dark .vk-ai-result-text {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.vk-theme-dark .vk-ai-suggestion {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.vk-theme-dark .vk-ai-suggestion:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Nature theme adjustments */
+
+.vk-theme-nature .vk-ai-btn {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.vk-theme-nature .vk-ai-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+}
+
+.vk-theme-nature .vk-ai-result {
+  border-left-color: #11998e;
+}
+
+.vk-theme-nature .vk-ai-result-label {
+  color: #11998e;
+}
+
+/* Sunset theme adjustments */
+
+.vk-theme-sunset .vk-ai-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.vk-theme-sunset .vk-ai-btn:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+.vk-theme-sunset .vk-ai-result {
+  border-left-color: #f5576c;
+}
+
+.vk-theme-sunset .vk-ai-result-label {
+  color: #f5576c;
+}
+
+/* Suggestions */
+
+.vk-suggestions {
+  padding: 8px 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.vk-clipboard-panel,
+.vk-autofill-panel {
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+}
+
+.vk-panel-title {
+  font-weight: 600;
+  color: white;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+}
+
+.vk-panel-item {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.vk-panel-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+
+.vk-panel-empty {
+  padding: 30px 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+}
+
+.vk-suggestion {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 12px;
+  padding: 4px 12px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vk-suggestion:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Input Display */
+
+.vk-input-display {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 14px;
+  min-height: 60px;
+  max-height: 110px;
+  overflow-y: auto;
+  word-wrap: break-word;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vk-input-display.vk-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+/* Keys */
+
+.vk-keys {
+  padding: 16px;
+}
+
+.vk-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  justify-content: center;
+}
+
+.vk-key {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  min-width: 50px;
+  height: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  pointer-events: auto;
+}
+
+.vk-key:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.vk-key:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.vk-key-space {
+  min-width: 300px;
+}
+
+.vk-key-special {
+  background: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  min-width: 70px;
+}
+
+.vk-key-enter {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.vk-key-arrow {
+  min-width: 60px;
+}
+
+.vk-key-active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Footer */
+
+.vk-footer {
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vk-stats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+}
+
+.vk-separator {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Animations */
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.vk-keyboard {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Scrollbar */
+
+.vk-input-display::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vk-input-display::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.vk-input-display::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.vk-input-display::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive adjustments for full mode */
+
+.vk-keyboard.vk-full .vk-keys {
+  padding: 12px;
+}
+
+.vk-keyboard.vk-full .vk-row {
+  margin-bottom: 10px;
+}
+
+.vk-keyboard.vk-full .vk-key {
+  min-width: 80px;
+  height: 50px;
+  font-size: 18px;
+  padding: 12px;
+}
+
+.vk-keyboard.vk-full .vk-key-space {
+  min-width: 500px;
+}
+
+.vk-keyboard.vk-full .vk-input-display {
+  min-height: 50px;
+  max-height: 75px;
+  font-size: 15px;
+}

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Virtual Keyboard Pro - Settings</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        opacity: 0.9;
+        font-size: 14px;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-icon {
+        font-size: 24px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 20px;
+        font-family: system-ui, sans-serif;
+      }
+
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group select {
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      .form-group select:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+        outline: none;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.3s;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .help-text {
+        font-size: 12px;
+        color: #888;
+        margin-top: 6px;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .checkbox-group:hover {
+        background: #f0f0f0;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        flex: 1;
+      }
+
+      .snippet-list {
+        margin-top: 16px;
+      }
+
+      .snippet-item {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 12px;
+      }
+
+      .snippet-shortcut {
+        font-family: "Courier New", monospace;
+        background: #667eea;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        min-width: 100px;
+        text-align: center;
+      }
+
+      .snippet-text {
+        flex: 1;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .snippet-delete {
+        background: #ff4757;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.2s;
+      }
+
+      .snippet-delete:hover {
+        background: #ff3838;
+      }
+
+      .add-snippet {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .add-snippet input {
+        flex: 1;
+      }
+
+      .autofill-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      /* Buttons */
+
+      .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+      }
+
+      .btn-success {
+        background: #28a745;
+      }
+
+      .save-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 16px;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        display: none;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .danger-zone {
+        border-left-color: #ff4757;
+        background: #fff5f5;
+      }
+
+      .clipboard-item {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .clipboard-item:hover {
+        background: #f0f0f0;
+      }
+
+      .clipboard-preview {
+        flex: 1;
+        font-size: 14px;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .clipboard-time {
+        font-size: 12px;
+        color: #999;
+      }
+
+      .info-box {
+        background: #e7f3ff;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+      }
+
+      .info-box strong {
+        color: #1976d2;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .info-box h3 {
+        margin-top: 15px;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .info-box ul {
+        margin: 10px 0;
+        padding-left: 20px;
+      }
+
+      .info-box li {
+        margin: 5px 0;
+      }
+
+      .info-box p {
+        margin: 10px 0;
+        color: #666;
+      }
+
+      .help-text a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .help-text a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⌨️ Virtual Keyboard Pro Settings</h1>
+        <p>Configure your keyboard experience</p>
+      </div>
+
+      <div class="content">
+        <!-- <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">🔑</span> API Configuration
+                </div>
+                <div class="form-group">
+                    <label for="openai-key">OpenAI API Key (Optional)</label>
+                    <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off">
+                    <div class="help-text">Enable AI-powered text suggestions and completions</div>
+                </div>
+            </div> -->
+        <div class="settings-section">
+          <h2>🤖 AI Features Configuration</h2>
+          <div class="form-group">
+            <label for="openai-key">OpenAI API Key</label>
+            <input
+              type="password"
+              id="openai-key"
+              placeholder="sk-..."
+              autocomplete="off"
+            />
+            <small class="help-text">
+              Get your API key from
+              <a href="https://platform.openai.com/api-keys" target="_blank"
+                >OpenAI Platform</a
+              >
+              <br />
+              Required for AI proofreading, text continuation, and smart
+              suggestions
+              <br />
+              <strong>Privacy:</strong> Your API key is stored locally and only
+              used for API calls
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="ai-model">AI Model</label>
+            <select id="ai-model">
+              <option value="gpt-4o-mini-2024-07-18">
+                GPT-4o Mini (Fast & Cost-effective)
+              </option>
+              <option value="gpt-4o-2024-11-20">GPT-4o (Most Capable)</option>
+              <option value="gpt-3.5-turbo-0125">GPT-3.5 Turbo (Budget)</option>
+            </select>
+            <small class="help-text">
+              Choose the AI model based on your needs and budget
+              <br />
+              GPT-4o Mini: ~$0.15 per 1M input tokens (recommended)
+              <br />
+              GPT-4o: ~$2.50 per 1M input tokens (best quality)
+              <br />
+              GPT-3.5 Turbo: ~$0.50 per 1M input tokens (budget option)
+            </small>
+          </div>
+
+          <div class="info-box">
+            <strong>💡 How to use AI features:</strong>
+            <ol style="margin: 8px 0 0 20px; padding: 0">
+              <li>Add your OpenAI API key above</li>
+              <li>Click any input field to open the virtual keyboard</li>
+              <li>Type some text</li>
+              <li>Click the 🤖 button in the keyboard header</li>
+              <li>Choose: Proofread, Continue, or Get Suggestions</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="section-icon">🔒</span> Security & Privacy
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="secure-input" checked />
+            <label for="secure-input">
+              <strong>Secure Input Mode</strong><br />
+              <span class="help-text"
+                >Prevent keyboard from appearing on password fields</span
+              >
+            </label>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="save-history" checked />
+            <label for="save-history">
+              <strong>Save Clipboard History</strong><br />
+              <span class="help-text"
+                >Keep last 50 clipboard entries (stored locally)</span
+              >
+            </label>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="analytics" checked />
+            <label for="analytics">
+              <strong>Usage Analytics</strong><br />
+              <span class="help-text"
+                >Help improve the extension (no personal data collected)</span
+              >
+            </label>
+          </div>
+
+          <div class="form-group" style="margin-top: 20px">
+            <label>Host Permissions</label>
+            <textarea
+              id="blocked-sites"
+              placeholder="example.com&#10;banking-site.com&#10;&#10;Block keyboard on specific domains (one per line)"
+            ></textarea>
+            <div class="help-text">
+              The keyboard will not activate on these websites
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="section-icon">⚡</span> Text Snippets & Macros
+          </div>
+          <p style="margin-bottom: 16px; color: #666; font-size: 14px">
+            Define shortcuts that automatically expand to full text. Type the
+            shortcut (e.g., /email) and it will be replaced.
+          </p>
+
+          <div class="snippet-list" id="snippet-list">
+            <!-- Snippets will be loaded here -->
+          </div>
+
+          <div class="add-snippet">
+            <input
+              type="text"
+              id="new-snippet-shortcut"
+              placeholder="Shortcut (e.g., /email)"
+            />
+            <input
+              type="text"
+              id="new-snippet-text"
+              placeholder="Full text"
+              style="flex: 2"
+            />
+            <button class="btn" id="add-snippet-btn">Add Snippet</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="section-icon">📝</span> Form Auto-Fill
+          </div>
+          <p style="margin-bottom: 16px; color: #666; font-size: 14px">
+            Save common form data for quick auto-filling (stored locally and
+            encrypted)
+          </p>
+
+          <div class="autofill-fields">
+            <div class="form-group">
+              <label for="autofill-name">Full Name</label>
+              <input type="text" id="autofill-name" placeholder="John Doe" />
+            </div>
+
+            <div class="form-group">
+              <label for="autofill-email">Email</label>
+              <input
+                type="text"
+                id="autofill-email"
+                placeholder="john@example.com"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="autofill-phone">Phone</label>
+              <input
+                type="text"
+                id="autofill-phone"
+                placeholder="+1 234 567 8900"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="autofill-company">Company</label>
+              <input
+                type="text"
+                id="autofill-company"
+                placeholder="Acme Inc."
+              />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px">
+            <label for="autofill-address">Address</label>
+            <textarea
+              id="autofill-address"
+              placeholder="123 Main St&#10;City, State 12345"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <span class="section-icon">📋</span> Clipboard History
+          </div>
+          <p style="margin-bottom: 16px; color: #666; font-size: 14px">
+            Access your recent clipboard entries. Click to copy again.
+          </p>
+
+          <div id="clipboard-history">
+            <p style="color: #999; text-align: center; padding: 20px">
+              No clipboard history yet
+            </p>
+          </div>
+
+          <button
+            class="btn btn-secondary"
+            style="width: 100%; margin-top: 12px"
+            id="clear-clipboard-btn"
+          >
+            Clear History
+          </button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="section danger-zone">
+          <div class="section-title">
+            <span class="section-icon">⚠️</span> Danger Zone
+          </div>
+          <button
+            class="btn"
+            style="background: #ff4757"
+            id="reset-settings-btn"
+          >
+            Reset All Settings
+          </button>
+          <div class="help-text" style="margin-top: 8px">
+            This will clear all your data and reset to defaults
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>⚠️ Known Limitations</h2>
+
+          <div class="info-box">
+            <h3>Where the Virtual Keyboard Cannot Work:</h3>
+            <ul>
+              <li>
+                <strong>Chrome New Tab Page:</strong> Chrome security prevents
+                extensions from running on the new tab page
+              </li>
+              <li>
+                <strong>Chrome Settings (chrome://settings):</strong> Protected
+                by Chrome for security
+              </li>
+              <li>
+                <strong>Chrome Web Store:</strong> Cannot modify the extension
+                store pages
+              </li>
+              <li>
+                <strong>Other chrome:// URLs:</strong> All internal Chrome pages
+                are restricted
+              </li>
+            </ul>
+
+            <h3>✅ Workaround:</h3>
+            <p>
+              Simply navigate to any regular website (Google.com, GitHub.com,
+              etc.) and the keyboard will work normally!
+            </p>
+
+            <h3>Why This Limitation Exists:</h3>
+            <p>
+              This is a Chrome security feature to prevent malicious extensions
+              from tampering with browser settings or stealing sensitive
+              information. All extensions have this limitation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="save-bar">
+      <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+      <button class="btn btn-success" id="save-btn">Save All Settings</button>
+    </div>
+
+    <div class="success-message" id="success-message">
+      ✓ Settings saved successfully!
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

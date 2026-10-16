@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Virtual Keyboard Pro",
+  "version": "1.0.0",
+  "description": "An elegant, draggable virtual keyboard with smart features",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "Smart Virtual Keyboard"
+  },
+  "icons": {
+    "16": "icons/logo-16.png",
+    "48": "icons/logo-48.png",
+    "128": "icons/logo-128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "keyboard-component.js",
+        "keyboard-layouts.js",
+        "styles.css",
+        "common_words.txt",
+        "src/core/*.js",
+        "src/ui/*.js",
+        "src/ui/panels/*.js",
+        "src/input/*.js",
+        "src/features/*.js",
+        "src/services/*.js",
+        "src/utils/*.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "options_page": "src/options/options.html"
+}
