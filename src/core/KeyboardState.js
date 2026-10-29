@@ -2,6 +2,7 @@
 
 export class KeyboardState {
     constructor() {
+        this.enabled = true;
         this.isVisible = false;
         this.isInitialized = false;
         this.settingsLoaded = false;
@@ -30,7 +31,7 @@ export class KeyboardState {
         this.clipboardHistory = [];
         this.suggestions = [];
 
-        this.openaiKey = '';
+        this.aiConfigured = false;
         this.aiFeatures = {
             proofreading: true,
             continuation: true,

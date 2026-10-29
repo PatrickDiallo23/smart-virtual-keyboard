@@ -2,15 +2,10 @@
   "manifest_version": 3,
   "name": "Smart Virtual Keyboard Pro",
   "version": "1.0.0",
-  "description": "An elegant, draggable virtual keyboard with smart features",
-  "permissions": [
-    "storage",
-    "activeTab",
-    "scripting",
-    "clipboardRead",
-    "clipboardWrite"
-  ],
-  "host_permissions": ["<all_urls>"],
+  "description": "An elegant, draggable virtual keyboard with auto-complete, snippets, clipboard history and optional AI assistance.",
+  "minimum_chrome_version": "105",
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.openai.com/*"],
   "background": {
     "service_worker": "background.js"
   },
@@ -35,9 +30,6 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "keyboard-component.js",
-        "keyboard-layouts.js",
-        "styles.css",
         "common_words.txt",
         "src/core/*.js",
         "src/ui/*.js",

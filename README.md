@@ -15,7 +15,7 @@ An elegant, draggable, and fully customizable virtual keyboard extension for Goo
 -   **Text Snippets**: Create shortcuts for frequently used phrases (e.g., `/email` -> `my.email@example.com`).
 -   **Themes**: Choose from Light, Dark, Nature, and Sunset themes.
 -   **Auto-Fill**: Save and fill form data securely.
--   **Secure Input**: Option to disable logging for sensitive fields.
+-   **Secure Input**: Keyboard never attaches to password fields (configurable).
 
 ## Installation (Developer Mode)
 
@@ -55,6 +55,17 @@ To use the AI Assistant:
 2.  Go to **Snippets**.
 3.  Add new shortcuts and their corresponding expansion text.
 
+## Development
+
+```bash
+npm run check     # validates manifest references, JS syntax and web_accessible_resources
+npm run package   # check + builds dist/smart-virtual-keyboard-<version>.zip from HEAD (commit first)
+```
+
+Layout: `content.js` loads `src/core/VirtualKeyboard.js` in the extension's isolated world; `background.js` only seeds defaults and proxies OpenAI calls so the API key never reaches a web page. Files not needed at runtime are excluded from the zip via `.gitattributes`.
+
+See [PRIVACY.md](PRIVACY.md) for the store privacy policy.
+
 ## Tech Stack
 
 -   **Frontend**: Vanilla JavaScript (ES6+), HTML5, CSS3.
@@ -67,7 +78,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the [MIT](LICENSE) License - see the  file for details.
+This project is licensed under the [MIT](LICENSE) License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 

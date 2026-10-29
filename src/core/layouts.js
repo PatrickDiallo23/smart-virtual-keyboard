@@ -1,4 +1,4 @@
-const KEYBOARD_LAYOUTS = {
+export const KEYBOARD_LAYOUTS = {
     qwerty: [
         ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Backspace"],
         ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
@@ -49,7 +49,3 @@ const KEYBOARD_LAYOUTS = {
         ["123", "Space", "←", "→", "Clear"],
     ],
 };
-
-if (typeof window !== "undefined") {
-    window.KEYBOARD_LAYOUTS = KEYBOARD_LAYOUTS;
-}

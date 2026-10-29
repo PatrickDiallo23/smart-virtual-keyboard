@@ -100,9 +100,20 @@ export class KeyHandler {
                 value: value.slice(0, start) + '\n' + value.slice(end),
                 cursorPos: start + 1
             };
+        } else if (field.isContentEditable) {
+            // Let the site handle Enter first (chat boxes send on it); synthetic events never run the
+            // browser's default edit action, so insert the paragraph ourselves if nobody preventDefault()ed.
+            const handled = !field.dispatchEvent(new KeyboardEvent('keydown', {
+                key: 'Enter', code: 'Enter', keyCode: 13, bubbles: true, cancelable: true
+            }));
+            if (!handled) {
+                document.execCommand('insertParagraph');
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            return null;
         } else {
             if (field.form) {
-                field.form.submit();
+                field.form.requestSubmit();
             }
             return null;
         }

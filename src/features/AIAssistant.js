@@ -6,7 +6,7 @@ export class AIAssistant {
     }
 
     async callOpenAI(prompt, systemMessage, maxTokens = 150) {
-        if (!this.state.openaiKey || this.state.openaiKey.trim() === '') {
+        if (!this.state.aiConfigured) {
             throw new Error('OpenAI API key not configured. Please add your key in extension settings.');
         }
 
@@ -15,41 +15,22 @@ export class AIAssistant {
             throw new Error('Rate limit: Please wait a moment before making another request.');
         }
 
+        this.state.aiLoading = true;
+        this.state.lastAiRequest = now;
         try {
-            this.state.aiLoading = true;
-            this.state.lastAiRequest = now;
-
-            console.log('🤖 OpenAI Request:', { prompt, systemMessage });
-
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.state.openaiKey}`
-                },
-                body: JSON.stringify({
-                    model: this.state.aiFeatures.model,
-                    messages: [
-                        { role: 'system', content: systemMessage },
-                        { role: 'user', content: prompt }
-                    ],
-                    max_tokens: maxTokens,
-                    temperature: 0.0
-                })
+            const response = await chrome.runtime.sendMessage({
+                action: 'openai',
+                model: this.state.aiFeatures.model,
+                maxTokens,
+                messages: [
+                    { role: 'system', content: systemMessage },
+                    { role: 'user', content: prompt }
+                ]
             });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error.message || `API error: ${response.status}`);
+            if (!response?.success) {
+                throw new Error(response?.error ?? 'AI request failed');
             }
-
-            const data = await response.json();
-            console.log('🤖 OpenAI Response:', data);
-
-            return data.choices[0].message.content.trim();
-        } catch (error) {
-            console.error('❌ OpenAI API Error:', error);
-            throw error;
+            return response.text;
         } finally {
             this.state.aiLoading = false;
         }

@@ -24,7 +24,6 @@ export class VirtualKeyboard {
             wordsUrl: config.wordsUrl || './common_words.txt',
             ...config
         };
-        console.log('VirtualKeyboard: Initializing with config:', config);
 
         this.state = new KeyboardState();
         this.state.commonWords = DEFAULT_COMMON_WORDS;
@@ -57,11 +56,8 @@ export class VirtualKeyboard {
 
     async init() {
         if (this.state.isInitialized) {
-            console.log('VirtualKeyboard: Already initialized');
             return;
         }
-
-        console.log('VirtualKeyboard: Init called');
 
         this.ui = new KeyboardUI(this.state, this.layoutService);
         this.ui.createContainer();
@@ -74,44 +70,42 @@ export class VirtualKeyboard {
         this._attachEventListeners();
 
         this.fieldDetector.setupListeners((field) => this._onFieldActivated(field));
-
-        this._setupMessageListeners();
+        document.addEventListener('focusout', (e) => {
+            if (this.state.activeField?.contains(e.target)) this._saveActiveFieldToHistory();
+        });
 
         this.state.isInitialized = true;
 
-        console.log('VirtualKeyboard: UI created, loading settings...');
         try {
             await this.loadSettings();
-            console.log('VirtualKeyboard: Settings loaded');
         } catch (err) {
             console.error('VirtualKeyboard: Failed to load settings:', err);
         }
 
-        console.log('VirtualKeyboard: Initialization complete');
-
-        this._notifyReady();
     }
 
     async loadSettings() {
-        console.log('VirtualKeyboard: Loading settings...');
 
         try {
             const data = await this.storageService.get([
                 'size', 'theme', 'autoComplete', 'soundEnabled',
                 'currentLayout', 'secureInput', 'blockedSites',
-                'snippets', 'openaiKey', 'aiModel'
+                'snippets', 'aiModel', 'extensionEnabled'
             ]);
+            const { openaiKey } = await this.storageService.getLocal(['openaiKey']);
+            this.state.aiConfigured = Boolean(openaiKey?.trim());
 
+            this.state.enabled = data.extensionEnabled !== false;
+            if (!this.state.enabled) this.ui?.hide();
             if (data.size) this.state.size = data.size;
             if (data.theme) this.state.theme = data.theme;
             if (data.autoComplete !== undefined) this.state.autoComplete = data.autoComplete;
             if (data.soundEnabled !== undefined) this.state.soundEnabled = data.soundEnabled;
             if (data.currentLayout) this.state.currentLayout = data.currentLayout;
             if (data.secureInput !== undefined) this.state.secureInput = data.secureInput;
-            if (data.openaiKey) this.state.openaiKey = data.openaiKey;
             if (data.aiModel) this.state.aiFeatures.model = data.aiModel;
 
-            if (data.blockedSites) {
+            if (data.blockedSites !== undefined) {
                 if (typeof data.blockedSites === 'string') {
                     this.state.blockedSites = data.blockedSites
                         .split('\n')
@@ -122,7 +116,7 @@ export class VirtualKeyboard {
                 }
             }
 
-            if (data.snippets && Array.isArray(data.snippets)) {
+            if (Array.isArray(data.snippets)) {
                 this.snippetExpander.loadSnippets(data.snippets);
             }
 
@@ -132,8 +126,7 @@ export class VirtualKeyboard {
 
             await this.clipboardManager.loadHistory();
 
-            if (this.config.wordsUrl) {
-                console.log('VirtualKeyboard: Loading common words from:', this.config.wordsUrl);
+            if (this.config.wordsUrl && this.state.commonWords === DEFAULT_COMMON_WORDS) {
                 await this.autoComplete.loadCommonWords(this.config.wordsUrl);
             }
 
@@ -159,15 +152,14 @@ export class VirtualKeyboard {
 
     show() {
         this.ui.show();
-        console.log('VirtualKeyboard: Shown');
     }
 
     hide() {
         this.ui.hide();
-        console.log('VirtualKeyboard: Hidden');
     }
 
     toggle() {
+        if (!this.state.enabled) return;
         if (this.state.isVisible) {
             this.hide();
         } else {
@@ -176,6 +168,7 @@ export class VirtualKeyboard {
     }
 
     _attachEventListeners() {
+        const container = this.ui.container;
         this._setupDragHandling(container);
 
         container.querySelector('#vk-close').addEventListener('click', (e) => {
@@ -243,6 +236,8 @@ export class VirtualKeyboard {
         let dragStartPos = { x: 0, y: 0 };
 
         container.addEventListener('mousedown', (e) => {
+            // Keep focus in the page's field while using the keyboard
+            e.preventDefault();
             // Don't drag when clicking buttons
             if (e.target.closest('.vk-key') ||
                 e.target.closest('.vk-controls') ||
@@ -304,7 +299,6 @@ export class VirtualKeyboard {
             }
 
             if (result.value !== undefined) {
-                this.clipboardManager.saveToHistory(result.value);
                 this._updateDisplay();
                 this._updateSuggestions();
             }
@@ -316,10 +310,17 @@ export class VirtualKeyboard {
     }
 
     _onFieldActivated(field) {
+        if (field !== this.state.activeField) {
+            this._saveActiveFieldToHistory();
+        }
         this.state.setActiveField(field);
         this.show();
         this._updateDisplay();
         this.ui.updateFieldType(this.fieldDetector.getFieldType(field));
+    }
+
+    _saveActiveFieldToHistory(field = this.state.activeField) {
+        if (field?.value) this.clipboardManager.saveToHistory(field.value);
     }
 
     _updateDisplay() {
@@ -432,57 +433,5 @@ export class VirtualKeyboard {
         if (soundBtn) {
             soundBtn.textContent = this.state.soundEnabled ? '🔊' : '🔇';
         }
-    }
-
-    _setupMessageListeners() {
-        window.addEventListener('message', (event) => {
-            switch (event.data.type) {
-                case 'vk-toggle':
-                    this.toggle();
-                    break;
-
-                case 'vk-hide':
-                    this.hide();
-                    break;
-
-                case 'vk-reload-settings':
-                    console.log('VirtualKeyboard: Reloading settings...');
-                    this.loadSettings()
-                        .then(() => console.log('VirtualKeyboard: Settings reloaded'))
-                        .catch(err => console.error('VirtualKeyboard: Failed to reload settings:', err));
-                    break;
-
-                case 'vk-storage-changed':
-                    this._handleStorageChange(event.data.key, event.data.value);
-                    break;
-            }
-        });
-    }
-
-    _handleStorageChange(key, value) {
-        console.log('VirtualKeyboard: Storage changed:', key);
-
-        if (key === 'snippets' && value) {
-            const snippets = Array.isArray(value) ? value : [];
-            this.snippetExpander.loadSnippets(snippets);
-            console.log('✓ VirtualKeyboard: Snippets updated:', snippets);
-        } else if (key === 'blockedSites' && value) {
-            if (typeof value === 'string') {
-                this.state.blockedSites = value
-                    .split('\n')
-                    .map(s => s.trim())
-                    .filter(s => s.length > 0);
-            } else if (Array.isArray(value)) {
-                this.state.blockedSites = value;
-            }
-            console.log('✓ VirtualKeyboard: Blocked sites updated:', this.state.blockedSites);
-        }
-    }
-
-    _notifyReady() {
-        setTimeout(() => {
-            window.dispatchEvent(new Event('vk-ready'));
-            console.log('VirtualKeyboard: vk-ready event dispatched');
-        }, 500);
     }
 }

@@ -14,7 +14,6 @@ export class DOMHelpers {
                     createScript: (input) => input,
                     createScriptURL: (input) => input
                 });
-                console.log('DOMHelpers: Trusted Types policy created');
             } catch (e) {
                 console.warn('DOMHelpers: Failed to create Trusted Types policy:', e);
             }
@@ -34,9 +33,12 @@ export class DOMHelpers {
     }
 
     static escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     static createElement(tag, attributes = {}, content = '') {

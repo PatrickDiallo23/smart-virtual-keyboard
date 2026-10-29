@@ -15,27 +15,10 @@ toggle.addEventListener("click", () => {
     chrome.storage.sync.set({ extensionEnabled: newState }, () => {
         updateUI(newState);
 
-        // Notify all tabs to reload or disable
-        chrome.tabs.query({}, (tabs) => {
-            tabs.forEach((tab) => {
-                chrome.tabs.sendMessage(tab.id, { action: "toggleExtension" }, () => {
-                    // Ignore errors for tabs that can't receive messages
-                    if (chrome.runtime.lastError) {
-                        console.log("Could not send message to tab:", tab.id);
-                    }
-                });
-            });
-        });
-
-        // Show feedback
-        const originalText = status.textContent;
         status.textContent = newState ?
-            "✓ Extension enabled! Refresh pages to activate." :
-            "✗ Extension disabled! Refresh pages to deactivate.";
-
-        setTimeout(() => {
-            updateUI(newState);
-        }, 2000);
+            "✓ Extension enabled" :
+            "✗ Extension disabled";
+        setTimeout(() => updateUI(newState), 2000);
     });
 });
 

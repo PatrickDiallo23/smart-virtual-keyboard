@@ -1,8 +1,8 @@
-// src/services/LayoutService.js
+import { KEYBOARD_LAYOUTS } from '../core/layouts.js';
 
 export class LayoutService {
     constructor() {
-        this.layouts = window.KEYBOARD_LAYOUTS || {};
+        this.layouts = KEYBOARD_LAYOUTS;
     }
 
     /**

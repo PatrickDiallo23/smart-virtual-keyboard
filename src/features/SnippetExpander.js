@@ -6,13 +6,10 @@ export class SnippetExpander {
     }
 
     expand(shortcut) {
-        console.log('SnippetExpander: Looking for shortcut:', shortcut);
-        console.log('SnippetExpander: Available snippets:', this.state.snippets);
 
         const snippet = this.state.snippets.find(s => s.shortcut === shortcut);
 
         if (snippet) {
-            console.log('SnippetExpander: Snippet found! Expanding:', snippet);
             return snippet.text;
         }
 
@@ -40,7 +37,6 @@ export class SnippetExpander {
     loadSnippets(snippets) {
         if (Array.isArray(snippets)) {
             this.state.snippets = snippets;
-            console.log('SnippetExpander: Loaded snippets:', this.state.snippets);
         }
     }
 }

@@ -4,6 +4,7 @@ let clipboardHistory = [];
 // Load all settings on page load
 document.addEventListener("DOMContentLoaded", () => {
     loadSettings();
+    loadApiKey();
     loadSnippets();
     loadClipboardHistory();
 
@@ -18,11 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function loadSettings() {
     chrome.storage.sync.get(
         [
-            "openaiKey",
             "aiModel",
             "secureInput",
             "saveHistory",
-            "analytics",
             "blockedSites",
             "autofillName",
             "autofillEmail",
@@ -32,10 +31,6 @@ function loadSettings() {
         ],
         (data) => {
             // API Configuration
-            if (data.openaiKey) {
-                document.getElementById("openai-key").value = data.openaiKey;
-            }
-
             if (data.aiModel) {
                 document.getElementById("ai-model").value = data.aiModel;
             }
@@ -45,7 +40,6 @@ function loadSettings() {
                 data.secureInput !== false;
             document.getElementById("save-history").checked =
                 data.saveHistory !== false;
-            document.getElementById("analytics").checked = data.analytics !== false;
 
             if (data.blockedSites) {
                 document.getElementById("blocked-sites").value = data.blockedSites;
@@ -68,18 +62,24 @@ function loadSettings() {
     );
 }
 
+function loadApiKey() {
+    chrome.storage.local.get(["openaiKey"], (data) => {
+        if (data.openaiKey) {
+            document.getElementById("openai-key").value = data.openaiKey;
+        }
+    });
+}
+
 function loadSnippets() {
     chrome.storage.sync.get(["snippets"], (data) => {
         if (data.snippets && Array.isArray(data.snippets)) {
             snippets = data.snippets;
-            console.log("Options: Loaded snippets from storage:", snippets);
         } else {
             snippets = [
                 { shortcut: "/email", text: "your.email@example.com" },
                 { shortcut: "/phone", text: "+1 234 567 8900" },
                 { shortcut: "/addr", text: "123 Main St, City, State 12345" },
             ];
-            console.log("Options: Using default snippets");
         }
         renderSnippets();
     });
@@ -112,7 +112,7 @@ function renderSnippets() {
     });
 }
 
-function addSnippet() {
+async function addSnippet() {
     const shortcut = document.getElementById("new-snippet-shortcut").value.trim();
     const text = document.getElementById("new-snippet-text").value.trim();
 
@@ -140,20 +140,21 @@ function addSnippet() {
 
     renderSnippets();
 
-    // Auto-save
-    chrome.storage.sync.set({ snippets }, () => {
-        console.log("Options: Snippet saved to storage:", snippets);
-        showSuccessMessage();
-    });
+    // Auto-save; roll the new snippet back if storage refuses it (e.g. sync item quota)
+    if (!(await saveSync({ snippets }))) {
+        snippets.pop();
+        renderSnippets();
+    }
 }
 
-function deleteSnippet(index) {
+async function deleteSnippet(index) {
     if (confirm("Delete this snippet?")) {
-        snippets.splice(index, 1);
+        const [removed] = snippets.splice(index, 1);
         renderSnippets();
-        chrome.storage.sync.set({ snippets }, () => {
-            console.log("Options: Snippets updated after deletion");
-        });
+        if (!(await saveSync({ snippets }))) {
+            snippets.splice(index, 0, removed);
+            renderSnippets();
+        }
     }
 }
 
@@ -198,11 +199,7 @@ function renderClipboardHistory() {
 }
 
 function copyToClipboard(text, index) {
-    const textarea = document.createElement("textarea");
-    textarea.innerHTML = text;
-    const decodedText = textarea.value;
-
-    navigator.clipboard.writeText(decodedText).then(() => {
+    navigator.clipboard.writeText(text).then(() => {
         // Show feedback
         const items = document.querySelectorAll(".clipboard-item");
         if (items[index]) {
@@ -234,16 +231,14 @@ function getTimeAgo(timestamp) {
     return Math.floor(seconds / 86400) + "d ago";
 }
 
-function saveSettings() {
+async function saveSettings() {
     const settings = {
         // API Configuration
-        openaiKey: document.getElementById("openai-key").value,
         aiModel: document.getElementById("ai-model").value,
 
         // Security & Privacy
         secureInput: document.getElementById("secure-input").checked,
         saveHistory: document.getElementById("save-history").checked,
-        analytics: document.getElementById("analytics").checked,
         blockedSites: document.getElementById("blocked-sites").value,
 
         // Form Auto-Fill
@@ -257,31 +252,38 @@ function saveSettings() {
         snippets: snippets,
     };
 
-    chrome.storage.sync.set(settings, () => {
-        console.log("Options: Settings saved", settings);
-        showSuccessMessage();
-
-        chrome.tabs.query({}, (tabs) => {
-            tabs.forEach((tab) => {
-                chrome.tabs.sendMessage(
-                    tab.id, { action: "settingsUpdated" },
-                    () => {
-                        if (chrome.runtime.lastError) {
-                            // Ignore errors for tabs that can't receive messages
-                        }
-                    }
-                );
-            });
-        });
-    });
+    // The API key stays on this device (storage.local), never synced.
+    try {
+        await chrome.storage.local.set({ openaiKey: document.getElementById("openai-key").value.trim() });
+    } catch (err) {
+        showMessage(`Could not save the API key: ${err.message}`, true);
+        return;
+    }
+    await saveSync(settings);
 }
 
-function showSuccessMessage() {
+// Resolves true when saved. Failures (quota, offline sync, etc.) are shown, never reported as success.
+async function saveSync(data) {
+    try {
+        await chrome.storage.sync.set(data);
+        showMessage("✓ Settings saved successfully!");
+        return true;
+    } catch (err) {
+        showMessage(`Not saved: ${err.message}`, true);
+        return false;
+    }
+}
+
+let messageTimer;
+function showMessage(text, isError = false) {
     const msg = document.getElementById("success-message");
+    msg.textContent = text;
+    msg.classList.toggle("error", isError);
     msg.style.display = "block";
-    setTimeout(() => {
+    clearTimeout(messageTimer);
+    messageTimer = setTimeout(() => {
         msg.style.display = "none";
-    }, 3000);
+    }, isError ? 8000 : 3000);
 }
 
 function resetAllSettings() {
@@ -299,7 +301,10 @@ function resetAllSettings() {
 }
 
 function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }

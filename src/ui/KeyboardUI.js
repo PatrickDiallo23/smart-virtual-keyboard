@@ -34,7 +34,6 @@ export class KeyboardUI {
         document.body.appendChild(container);
         this.container = container;
 
-        console.log('KeyboardUI: Container created');
         return container;
     }
 
@@ -61,7 +60,6 @@ export class KeyboardUI {
             keysContainer.appendChild(rowDiv);
         });
 
-        console.log('KeyboardUI: Keys rendered');
     }
 
     updateDisplay(text, charCount) {

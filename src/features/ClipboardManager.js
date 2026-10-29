@@ -41,7 +41,6 @@ export class ClipboardManager {
         const data = await this.storageService.getLocal(['clipboardHistory']);
         if (data.clipboardHistory) {
             this.state.clipboardHistory = data.clipboardHistory;
-            console.log('ClipboardManager: Loaded history');
         }
     }
 

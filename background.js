@@ -1,123 +1,58 @@
+const DEFAULTS = {
+    extensionEnabled: true,
+    secureInput: true,
+    saveHistory: true,
+    snippets: [],
+    blockedSites: ''
+};
 
-console.log("Virtual Keyboard: Background service worker started");
+const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+const MAX_TOKENS_CAP = 1000;
 
-chrome.runtime.onInstalled.addListener(() => {
-    console.log("Virtual Keyboard: Extension installed/updated");
-
-    chrome.storage.sync.get(null, (data) => {
-        console.log("Current storage:", data);
-
-        const defaults = {
-            extensionEnabled: true,
-            secureInput: true,
-            saveHistory: true,
-            analytics: true,
-            snippets: [],
-            blockedSites: ""
-        };
-
-        const toSet = {};
-        for (const [key, value] of Object.entries(defaults)) {
-            if (data[key] === undefined) {
-                toSet[key] = value;
-            }
-        }
-
-        if (Object.keys(toSet).length > 0) {
-            chrome.storage.sync.set(toSet, () => {
-                console.log("Virtual Keyboard: Set default settings:", toSet);
-            });
-        }
-    });
+chrome.runtime.onInstalled.addListener(async () => {
+    const existing = await chrome.storage.sync.get(Object.keys(DEFAULTS));
+    const missing = Object.fromEntries(
+        Object.entries(DEFAULTS).filter(([key]) => existing[key] === undefined)
+    );
+    if (Object.keys(missing).length > 0) {
+        await chrome.storage.sync.set(missing);
+    }
 });
+
+// The OpenAI call lives here so the API key never enters a web page's process
+// and the request is not subject to the page's CSP.
+async function callOpenAI({ model, messages, maxTokens }) {
+    const { openaiKey } = await chrome.storage.local.get(['openaiKey']);
+    if (!openaiKey?.trim()) {
+        throw new Error('OpenAI API key not configured. Please add your key in extension settings.');
+    }
+
+    const response = await fetch(OPENAI_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${openaiKey.trim()}`
+        },
+        body: JSON.stringify({
+            model: String(model),
+            messages,
+            max_tokens: Math.min(Number(maxTokens) || 150, MAX_TOKENS_CAP),
+            temperature: 0
+        })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data.error?.message ?? `API error: ${response.status}`);
+    }
+    return data.choices[0].message.content.trim();
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Background: Received message:", message);
+    if (message?.action !== 'openai') return false;
 
-    if (message.action === "getStorage") {
-        chrome.storage.sync.get(message.keys, (result) => {
-            console.log("Background: Returning storage:", result);
-            sendResponse({ success: true, data: result });
-        });
-        return true;
-    }
-
-    if (message.action === "setStorage") {
-        chrome.storage.sync.set(message.data, () => {
-            if (chrome.runtime.lastError) {
-                console.error("Background: Storage error:", chrome.runtime.lastError);
-                sendResponse({
-                    success: false,
-                    error: chrome.runtime.lastError.message,
-                });
-            } else {
-                console.log("Background: Storage saved successfully");
-                sendResponse({ success: true });
-            }
-        });
-        return true;
-    }
-
-    if (message.action === "getLocalStorage") {
-        chrome.storage.local.get(message.keys, (result) => {
-            sendResponse({ success: true, data: result });
-        });
-        return true;
-    }
-
-    if (message.action === "setLocalStorage") {
-        chrome.storage.local.set(message.data, () => {
-            if (chrome.runtime.lastError) {
-                sendResponse({
-                    success: false,
-                    error: chrome.runtime.lastError.message,
-                });
-            } else {
-                sendResponse({ success: true });
-            }
-        });
-        return true;
-    }
+    callOpenAI(message)
+        .then((text) => sendResponse({ success: true, text }))
+        .catch((err) => sendResponse({ success: false, error: err.message }));
+    return true; // keep the channel open for the async response
 });
-
-chrome.storage.onChanged.addListener((changes, namespace) => {
-    console.log(`Storage changed in ${namespace}:`, changes);
-
-    const changedKeys = Object.keys(changes);
-    console.log("Changed keys:", changedKeys);
-
-    if (
-        changedKeys.includes("snippets") ||
-        changedKeys.includes("blockedSites")
-    ) {
-        chrome.tabs.query({}, (tabs) => {
-            console.log(`Notifying ${tabs.length} tabs about storage changes`);
-
-            tabs.forEach((tab) => {
-                changedKeys.forEach((key) => {
-                    if (changes[key]) {
-                        chrome.tabs.sendMessage(
-                            tab.id, {
-                                action: "storageChanged",
-                                key: key,
-                                value: changes[key].newValue,
-                            },
-                            (response) => {
-                                if (chrome.runtime.lastError) {
-                                    console.log(
-                                        `Tab ${tab.id} couldn't receive message:`,
-                                        chrome.runtime.lastError.message
-                                    );
-                                } else {
-                                    console.log(`Tab ${tab.id} notified about ${key} change`);
-                                }
-                            }
-                        );
-                    }
-                });
-            });
-        });
-    }
-});
-
-console.log("Virtual Keyboard: Background service worker ready");

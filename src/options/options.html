@@ -53,7 +53,7 @@
         padding: 20px;
         background: #f9f9f9;
         border-radius: 12px;
-        border-left: 4px solid #667eea;
+        border: 1px solid rgba(102, 126, 234, 0.3);
       }
 
       .section-title {
@@ -282,6 +282,11 @@
         animation: slideIn 0.3s ease-out;
       }
 
+      .success-message.error {
+        background: #dc3545;
+        max-width: 420px;
+      }
+
       @keyframes slideIn {
         from {
           transform: translateX(400px);
@@ -294,7 +299,7 @@
       }
 
       .danger-zone {
-        border-left-color: #ff4757;
+        border-color: rgba(255, 71, 87, 0.4);
         background: #fff5f5;
       }
 
@@ -330,7 +335,7 @@
 
       .info-box {
         background: #e7f3ff;
-        border-left: 4px solid #2196f3;
+        border: 1px solid rgba(33, 150, 243, 0.35);
         padding: 15px;
         margin-top: 15px;
         margin-bottom: 15px;
@@ -470,16 +475,6 @@
               <strong>Save Clipboard History</strong><br />
               <span class="help-text"
                 >Keep last 50 clipboard entries (stored locally)</span
-              >
-            </label>
-          </div>
-
-          <div class="checkbox-group">
-            <input type="checkbox" id="analytics" checked />
-            <label for="analytics">
-              <strong>Usage Analytics</strong><br />
-              <span class="help-text"
-                >Help improve the extension (no personal data collected)</span
               >
             </label>
           </div>

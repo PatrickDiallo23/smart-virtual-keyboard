@@ -1,0 +1,16 @@
+# Files excluded from `npm run package` (git archive)
+.agent export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+scripts export-ignore
+test.html export-ignore
+README.md export-ignore
+CLAUDE.md export-ignore
+ROADMAP.md export-ignore
+PUBLISHING.md export-ignore
+PRIVACY.md export-ignore
+package.json export-ignore
+icons/promo-* export-ignore
+icons/icon*.png export-ignore
+icons/logo-32.png export-ignore
+icons/logo-34.png export-ignore

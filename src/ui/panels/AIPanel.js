@@ -53,7 +53,7 @@ export class AIPanel {
         const currentText = this.state.activeField ? this.state.activeField.value : '';
         const hasText = currentText.trim().length > 0;
 
-        if (!this.state.openaiKey) {
+        if (!this.state.aiConfigured) {
             DOMHelpers.setInnerHTML(this.panel, `
             <div class="vk-panel-title">🤖 AI Assistant</div>
             <div class="vk-panel-empty">
@@ -164,7 +164,7 @@ export class AIPanel {
             const continuation = await this.aiAssistant.continueText(currentText);
 
             loadingDiv.style.display = 'none';
-            html = `
+            const html = `
                 <div class="vk-ai-result-label">Continuation:</div>
                 <div class="vk-ai-result-text">${DOMHelpers.escapeHtml(continuation)}</div>
                 <button class="vk-ai-apply" data-text="${DOMHelpers.escapeHtml(continuation)}" data-append="true">
@@ -203,7 +203,7 @@ export class AIPanel {
                 if (suggestions.length === 0) {
                     DOMHelpers.setInnerHTML(resultDiv, `<div class="vk-ai-error">No suggestions available</div>`);
                 } else {
-                    html = `
+                    const html = `
                     <div class="vk-ai-result-label">Suggestions:</div>
                     ${suggestions.map(s => 
                         `<button class="vk-ai-suggestion" data-text="${DOMHelpers.escapeHtml(s)}" data-append="true">

@@ -36,12 +36,12 @@ export class AutoComplete {
             }
 
             const response = await fetch(wordsURL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const text = await response.text();
             const words = text.split('\n').filter(w => w.trim().length > 0);
 
             if (words.length > 0) {
                 this.state.commonWords = words;
-                console.log(`AutoComplete: Loaded ${words.length} common words`);
             }
         } catch (err) {
             console.warn('AutoComplete: Could not load common_words.txt, using defaults', err);
